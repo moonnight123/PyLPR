@@ -37,3 +37,29 @@ plt_show(image)
 kernelX = cv2.getStructuringElement(cv2.MORPH_RECT, (30, 10))
 image = cv2.morphologyEx(image, cv2.MORPH_CLOSE, kernelX,iterations = 1)
 plt_show(image)
+
+
+kernelX = cv2.getStructuringElement(cv2.MORPH_RECT, (50, 1))
+kernelY = cv2.getStructuringElement(cv2.MORPH_RECT, (1, 20))
+
+image = cv2.dilate(image, kernelX)
+image = cv2.erode(image, kernelX)
+
+image = cv2.erode(image, kernelY)
+image = cv2.dilate(image, kernelY)
+
+image = cv2.medianBlur(image, 21)
+
+plt_show(image)
+
+contours, hierarchy = cv2.findContours(image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+for item in contours:
+    rect = cv2.boundingRect(item)
+    x = rect[0]
+    y = rect[1]
+    weight = rect[2]
+    height = rect[3]
+    if (weight > (height * 3.5)) and (weight < (height * 4)):
+        image = origin_image[y:y + height, x:x + weight]
+        plt_show0(image)
