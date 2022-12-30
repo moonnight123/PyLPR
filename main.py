@@ -20,7 +20,7 @@ def plt_show(img):
 # 图像去噪灰度处理
 def gray_guss(image):
     image = cv2.GaussianBlur(image, (3, 3), 0)
-    gray_image = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
+    gray_image = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
     return gray_image
 
 
@@ -36,8 +36,6 @@ ret, image = cv2.threshold(image, 0, 255, cv2.THRESH_OTSU)
 plt_show(image)
 kernelX = cv2.getStructuringElement(cv2.MORPH_RECT, (30, 10))
 image = cv2.morphologyEx(image, cv2.MORPH_CLOSE, kernelX,iterations = 1)
-plt_show(image)
-
 
 kernelX = cv2.getStructuringElement(cv2.MORPH_RECT, (50, 1))
 kernelY = cv2.getStructuringElement(cv2.MORPH_RECT, (1, 20))
@@ -50,8 +48,6 @@ image = cv2.dilate(image, kernelY)
 
 image = cv2.medianBlur(image, 21)
 
-plt_show(image)
-
 contours, hierarchy = cv2.findContours(image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
 for item in contours:
@@ -62,4 +58,13 @@ for item in contours:
     height = rect[3]
     if (weight > (height * 3.5)) and (weight < (height * 4)):
         image = origin_image[y:y + height, x:x + weight]
-        plt_show0(image)
+
+gray_image = gray_guss(image)
+# 图像阈值化操作——获得二值化图
+ret, image = cv2.threshold(gray_image, 0, 255, cv2.THRESH_OTSU)
+plt_show(image)
+
+#膨胀操作
+kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (2, 2))
+image = cv2.dilate(image, kernel)
+plt_show(image)
