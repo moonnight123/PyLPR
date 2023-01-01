@@ -68,3 +68,37 @@ plt_show(image)
 kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (2, 2))
 image = cv2.dilate(image, kernel)
 plt_show(image)
+
+contours, hierarchy = cv2.findContours(image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+words = []
+word_images = []
+#对所有轮廓逐一操作
+for item in contours:
+    word = []
+    rect = cv2.boundingRect(item)
+    x = rect[0]
+    y = rect[1]
+    weight = rect[2]
+    height = rect[3]
+    word.append(x)
+    word.append(y)
+    word.append(weight)
+    word.append(height)
+    words.append(word)
+# 排序，车牌号有顺序。words是一个嵌套列表
+words = sorted(words,key=lambda s:s[0],reverse=False)
+i = 0
+#word中存放轮廓的起始点和宽高
+for word in words:
+    # 筛选字符的轮廓
+    if (word[3] > (word[2] * 1.5)) and (word[3] < (word[2] * 3.5)) and (word[2] > 25):
+        i = i+1
+        splite_image = image[word[1]:word[1] + word[3], word[0]:word[0] + word[2]]
+        word_images.append(splite_image)
+        print(i)
+print(words)
+
+for i,j in enumerate(word_images):
+    plt.subplot(1,7,i+1)
+    plt.imshow(word_images[i],cmap='gray')
+plt.show()
